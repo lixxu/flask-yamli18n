@@ -25,3 +25,5 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+/flask-yamli18n.tar.gz
+/flask-yamli18n.tar
