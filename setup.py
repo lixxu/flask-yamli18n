@@ -10,7 +10,7 @@ from setuptools import setup
 
 setup(
     name='flask-yamli18n',
-    version='0.1',
+    version='0.1.1',
     url='https://github.com/lixxu/flask-yamli18n',
     license='BSD',
     author='Lix Xu',
@@ -18,7 +18,7 @@ setup(
     description='Use yaml files as translation files in flask',
     long_description=__doc__,
     namespace_packages=['flaskext'],
-    packages=['flaskext', 'flaskext.yamli18n'],
+    packages=['flaskext'],
     zip_safe=False,
     platforms='any',
     install_requires=[

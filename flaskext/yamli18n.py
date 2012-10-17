@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
-'''
-    flaskext.yamli18n
-    ~~~~~~~~~~~~~~~~~
+'''flask.ext.yamli18n
+~~~~~~~~~~~~~~~~~~~
 
-    Use yaml files for i18n support in Flask framework.
+Use yaml files for i18n support in Flask framework.
 
-    :copyright: (c) 2012 by Lix Xu.
-    :license: BSD, see LICENSE for more details.
+:copyright: (c) 2012 by Lix Xu.
+:license: BSD, see LICENSE for more details.
 
 '''
 
@@ -26,7 +25,8 @@ from flask import session, request
 
 
 class YAMLI18N(object):
-    def __init__(self, app=None, reload=False):
+    def __init__(self, app=None, reload=None):
+        '''reload controls whether reload the translations'''
         self.ymls = defaultdict(dict)
         self.ts = {}
         self.reload = reload
@@ -34,20 +34,20 @@ class YAMLI18N(object):
             self.init_app(app)
 
     def init_app(self, app):
+        '''get the **locales** and **reload** setting:
+
+            locales -> app.config['YAML_LOCALE_PATH']
+            reload  -> app.config['YAML_RELOAD']
+        '''
         locales_folder = app.config.get('YAML_LOCALE_PATH', 'locales')
         self.locales_path = os.path.join(app.root_path, locales_folder)
+        if self.reload is None:
+            self.reload = app.config.get('YAML_RELOAD', False)
+
         self.load_ymls()
 
     def load_ymls(self):
-        '''yaml files structure:
-            YAML_LOCALE_PATH\
-                blueprint1\
-                    en.yml
-                    ...
-                blueprint2\
-                    en.yml
-                    ...
-        '''
+        '''load the translations to **self.ymls**'''
         if self.ymls and self.reload is False:
             return
 
@@ -75,15 +75,54 @@ class YAMLI18N(object):
                         self.ts[file_path] = mt
 
     def t(self, text, lang=None, failback='en', **kwargs):
-        '''text:
-            1. name = default -> lang -> name
-            2. .name = blueprint -> lang -> name
-            3. ..name = blueprint -> lang -> endpoint -> name
-            4. users.name = users_blueprint -> lang -> name
-            5. users.edit.login = users_blueprint -> lang
-                                  -> edit_endpoint -> name
+        '''**text** follows the formats:
 
+            1. name = default -> lang -> name
+
+            2. .name = blueprint -> lang -> name
+
+            3. ..name = blueprint -> lang -> endpoint -> name
+
+            4. users.name = users_blueprint -> lang -> name
+
+            5. users.edit.login = users_blueprint -> lang -> edit -> name
+
+            in users/en.yml:
+
+            .. sourcecode:: yaml
+
+                .edit:
+                    name: Hello, there
+
+            **lang**
+                You can specify  for direct translating
+
+            **failback**
+                if not translation files found for **lang**,
+                use **failback** (default is `en`) instead
+
+            **kwargs**
+                used to provide additional params after translation
+
+                e.g. the translation string is:
+
+                .. sourcecode:: yaml
+
+                    hello_world: {user}, Hello world
+
+                then you can do this in your template:
+
+                .. sourcecode:: html+jinja
+
+                    {{ 'hello_world'|t(user='Lix') }}
+
+                you will get:
+
+                .. sourcecode:: html
+
+                    Lix, Hello world
         '''
+
         self.load_ymls()
         if lang is None:
             lang = session.get('lang', 'en')
