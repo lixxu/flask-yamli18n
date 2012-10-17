@@ -21,6 +21,7 @@ Flask-YAMLI18N is simple and only for translating text
 PS, this is from my personal project, so you can choose to use it or not.
 You can try this great extension `Flask_Babel`_.
 
+**Note**: Flask-YAMLI18N requires Python 2.6+ (uses **string.format** syntax).
 
 .. todo:: more friendly document
 

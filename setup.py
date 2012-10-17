@@ -1,6 +1,6 @@
 """
 Flask-yamli18n
---------------
+----------------
 
 Use YAML files for i18n in Flask
 It requires Python2.6+ as it uses string.format syntax.
