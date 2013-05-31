@@ -10,7 +10,7 @@ from setuptools import setup
 
 setup(
     name='flask-yamli18n',
-    version='0.1.1',
+    version='0.1.2',
     url='https://github.com/lixxu/flask-yamli18n',
     license='BSD',
     author='Lix Xu',

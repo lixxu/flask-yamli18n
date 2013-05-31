@@ -152,7 +152,7 @@ class YAMLI18N(object):
         elif text.count('.') == 1:  # is format 4
             blueprint, s = text.split('.')
         else:  # is format 5
-            blueprint, endpoint, s = text.split('.')
+            blueprint, endpoint, s = text.split('.', 2)
             endpoint = '.' + endpoint
 
         if blueprint not in self.ymls:
