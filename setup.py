@@ -17,8 +17,7 @@ setup(
     author_email='xuzenglin@gmail.com',
     description='Use yaml files as translation files in flask',
     long_description=__doc__,
-    namespace_packages=['flaskext'],
-    packages=['flaskext'],
+    packages=['flask_yamli18n'],
     zip_safe=False,
     platforms='any',
     install_requires=[
