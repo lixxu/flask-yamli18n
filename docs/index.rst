@@ -6,7 +6,7 @@
 Flask-YAMLI18N |release| documentation
 ===========================================
 
-.. module:: flaskext.yamli18n
+.. module:: flask.ext.yamli18n
 
 Overview
 ---------
