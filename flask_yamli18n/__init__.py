@@ -14,14 +14,13 @@ Use yaml files for i18n support in Flask framework.
 import os
 import os.path
 from collections import defaultdict
-
 from yaml import load
 try:
     from yaml import CLoader as Loader
 except ImportError:
     from yaml import Loader
 
-from flask import session, request
+from flask import session, request, Markup
 
 
 class YAMLI18N(object):
@@ -48,7 +47,7 @@ class YAMLI18N(object):
 
     def load_ymls(self):
         '''load the translations to **self.ymls**'''
-        if self.ymls and self.reload is False:
+        if self.ymls and not self.reload:
             return
 
         for d in os.listdir(self.locales_path):
@@ -62,16 +61,16 @@ class YAMLI18N(object):
             for yml_file in os.listdir(d_path):
                 if yml_file.endswith(('.yml', '.yaml')):
                     file_path = os.path.join(d_path, yml_file)
-                    if self.reload is True:
+                    if self.reload:
                         mt = os.path.getmtime(file_path)
-                        if self.ts.get(file_path, None) == mt:
+                        if self.ts.get(file_path) == mt:
                             continue
 
                     lang = os.path.splitext(yml_file)[0].lower()
                     with open(file_path) as f:
                         self.ymls[d][lang] = load(f, Loader=Loader)
 
-                    if self.reload is True:
+                    if self.reload:
                         self.ts[file_path] = mt
 
     def t(self, text, lang=None, failback='en', **kwargs):
@@ -128,7 +127,7 @@ class YAMLI18N(object):
             lang = session.get('lang', 'en')
 
         if not text:
-            return text
+            return Markup(text)
 
         # is format 1
         if '.' not in text or (text[-1] == '.' and text.count('.') == 1):
@@ -136,10 +135,10 @@ class YAMLI18N(object):
                 lang = failback
 
             if lang not in self.ymls['default']:
-                return text
+                return Markup(text)
 
             msg = self.ymls['default'][lang].get(text, text)
-            return msg.format(**kwargs) if kwargs else msg
+            return Markup(msg.format(**kwargs) if kwargs else msg)
 
         endpoint = None
         if text.startswith('..'):  # is format 3
@@ -156,21 +155,21 @@ class YAMLI18N(object):
             endpoint = '.' + endpoint
 
         if blueprint not in self.ymls:
-            return text.format(**kwargs) if kwargs else text
+            return Markup(text.format(**kwargs) if kwargs else text)
 
         bp = self.ymls[blueprint]
         if lang not in bp:
             lang = failback
 
         if lang not in bp:
-            return text
+            return Markup(text)
 
         yml = bp[lang]
         if endpoint in yml:
             msg = yml[endpoint].get(s, text)
-            return msg.format(**kwargs) if kwargs else msg
+            return Markup(msg.format(**kwargs) if kwargs else msg)
 
         if kwargs:
-            return yml.get(s, text).format(**kwargs)
+            return Markup(yml.get(s, text).format(**kwargs))
 
-        return yml.get(s, text)
+        return Markup(yml.get(s, text))

@@ -142,3 +142,14 @@ API
 .. _PyYAML: http://pyyaml.org/
 .. _gettext: http://www.gnu.org/software/gettext/
 .. _Flask_Babel: http://packages.python.org/Flask-Babel/
+
+Changelog
+---------
+
+Version 0.1.4
+-------------
+
+(tiny improvement, released on 2015-Jan-23)
+
+- Use `<http://flask.pocoo.org/docs/0.10/api/#flask.Markup>`_ for returned translation text
+  so that template no need to use `safe` filter any more.
