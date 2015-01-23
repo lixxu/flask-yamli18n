@@ -35,8 +35,9 @@ class YAMLI18N(object):
     def init_app(self, app):
         '''get the **locales** and **reload** setting:
 
-            locales -> app.config['YAML_LOCALE_PATH']
-            reload  -> app.config['YAML_RELOAD']
+            1. locales -> app.config['YAML_LOCALE_PATH']
+
+            2. reload  -> app.config['YAML_RELOAD']
         '''
         locales_folder = app.config.get('YAML_LOCALE_PATH', 'locales')
         self.locales_path = os.path.join(app.root_path, locales_folder)
