@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 '''flask.ext.yamli18n
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 Use yaml files for i18n support in Flask framework.
 
@@ -11,6 +11,7 @@ Use yaml files for i18n support in Flask framework.
 
 '''
 
+import io
 import os
 import os.path
 from collections import defaultdict
@@ -21,6 +22,8 @@ except ImportError:
     from yaml import Loader
 
 from flask import session, request, Markup
+
+__version__ = '0.1.5'
 
 
 class YAMLI18N(object):
@@ -68,7 +71,7 @@ class YAMLI18N(object):
                             continue
 
                     lang = os.path.splitext(yml_file)[0].lower()
-                    with open(file_path) as f:
+                    with io.open(file_path, encoding='utf-8') as f:
                         self.ymls[d][lang] = load(f, Loader=Loader)
 
                     if self.reload:

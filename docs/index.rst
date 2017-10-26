@@ -6,7 +6,7 @@
 Flask-YAMLI18N |release| documentation
 ===========================================
 
-.. module:: flask.ext.yamli18n
+.. module:: flask_yamli18n
 
 Overview
 ---------
@@ -54,7 +54,7 @@ How to use
 In your Flask application file (e.g. hello.py)::
 
     from flask import Flask, session, request
-    from flask.ext.yamli18n import YAMLI18N
+    from flask_yamli18n import YAMLI18N
 
     app = Flask(__name__)
     y18n = YAMLI18N(app)
@@ -68,6 +68,8 @@ In your Flask application file (e.g. hello.py)::
     # app.config['YAML_LOCALE_PATH'] = 'locales'
 
     app.jinja_env.filters['t'] = t
+    # or if you want use it as function
+    # app.jinja_env.globals['_'] = t
 
     # put lang to your session
     @app.before_request
@@ -145,6 +147,14 @@ API
 
 Changelog
 ---------
+
+Version 0.1.5
+-------------
+
+(tiny improvement, released on 2017-Oct-26)
+
+- Use `io` module to open the yaml files with encoding `utf-8` to work in python3.
+
 
 Version 0.1.4
 -------------
