@@ -148,6 +148,14 @@ API
 Changelog
 ---------
 
+Version 0.1.7
+-------------
+
+(tiny improvement, released on 2017-Oct-27)
+
+- moved `lang` and `failback` to `kwargs`, and added `args` for `t` method.
+
+
 Version 0.1.5
 -------------
 
