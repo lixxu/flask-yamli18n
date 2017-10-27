@@ -23,15 +23,21 @@ except ImportError:
 
 from flask import session, request, Markup
 
-__version__ = '0.1.5'
+__version__ = '0.1.7'
 
 
 class YAMLI18N(object):
-    def __init__(self, app=None, reload=None):
-        '''reload controls whether reload the translations'''
+    def __init__(self, app=None, reload=None, ignore_case=False):
+        '''**app**: flask app or None
+
+        **reload**: whether reload the translations if file modified
+
+        **ignore_case**: whether ignore the case
+        '''
         self.ymls = defaultdict(dict)
         self.ts = {}
         self.reload = reload
+        self.ignore_case = ignore_case
         if app is not None:
             self.init_app(app)
 
@@ -73,11 +79,15 @@ class YAMLI18N(object):
                     lang = os.path.splitext(yml_file)[0].lower()
                     with io.open(file_path, encoding='utf-8') as f:
                         self.ymls[d][lang] = load(f, Loader=Loader)
+                        if self.ignore_case:
+                            dct = self.ymls[d][lang]
+                            for k in list(dct.keys()):
+                                dct[k.lower()] = dct[k]
 
                     if self.reload:
                         self.ts[file_path] = mt
 
-    def t(self, text, lang=None, failback='en', **kwargs):
+    def t(self, text, *args, **kwargs):
         '''**text** follows the formats:
 
             1. name = default -> lang -> name
@@ -97,15 +107,10 @@ class YAMLI18N(object):
                 .edit:
                     name: Hello, there
 
-            **lang**
-                You can specify  for direct translating
-
-            **failback**
-                if not translation files found for **lang**,
-                use **failback** (default is `en`) instead
-
             **kwargs**
                 used to provide additional params after translation
+
+                **lang** and **failback** moved to kwargs
 
                 e.g. the translation string is:
 
@@ -125,7 +130,8 @@ class YAMLI18N(object):
 
                     Lix, Hello world
         '''
-
+        lang = kwargs.pop('lang', None)
+        failback = kwargs.pop('failback', 'en')
         self.load_ymls()
         if lang is None:
             lang = session.get('lang', 'en')
@@ -133,6 +139,7 @@ class YAMLI18N(object):
         if not text:
             return Markup(text)
 
+        lower_text = text.lower() if self.ignore_case else None
         # is format 1
         if '.' not in text or (text[-1] == '.' and text.count('.') == 1):
             if lang not in self.ymls['default']:
@@ -141,25 +148,25 @@ class YAMLI18N(object):
             if lang not in self.ymls['default']:
                 return Markup(text)
 
-            msg = self.ymls['default'][lang].get(text, text)
-            return Markup(msg.format(**kwargs) if kwargs else msg)
+            msg = self.ymls['default'][lang].get(lower_text or text, text)
+            return Markup((msg % args).format(**kwargs))
 
         endpoint = None
         if text.startswith('..'):  # is format 3
             blueprint = request.blueprint
             endpoint = '.{0}'.format(request.endpoint.split('.')[-1])
-            s = text[2:]
+            s = (lower_text or text)[2:]
         elif text.startswith('.'):  # is format 2
             blueprint = request.blueprint
-            s = text[1:]
+            s = (lower_text or text)[1:]
         elif text.count('.') == 1:  # is format 4
-            blueprint, s = text.split('.')
+            blueprint, s = (lower_text or text).split('.')
         else:  # is format 5
-            blueprint, endpoint, s = text.split('.', 2)
+            blueprint, endpoint, s = (lower_text or text).split('.', 2)
             endpoint = '.' + endpoint
 
         if blueprint not in self.ymls:
-            return Markup(text.format(**kwargs) if kwargs else text)
+            return Markup((text % args).format(**kwargs))
 
         bp = self.ymls[blueprint]
         if lang not in bp:
@@ -170,10 +177,6 @@ class YAMLI18N(object):
 
         yml = bp[lang]
         if endpoint in yml:
-            msg = yml[endpoint].get(s, text)
-            return Markup(msg.format(**kwargs) if kwargs else msg)
+            return Markup((yml[endpoint].get(s, text) % args).format(**kwargs))
 
-        if kwargs:
-            return Markup(yml.get(s, text).format(**kwargs))
-
-        return Markup(yml.get(s, text))
+        return Markup((yml.get(s, text) % args).format(**kwargs))
