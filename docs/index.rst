@@ -148,6 +148,14 @@ API
 Changelog
 ---------
 
+Version 0.1.8
+-------------
+
+(bug fixed, released on 2017-Dec-17)
+
+- KeyError for `kwargs`
+
+
 Version 0.1.7
 -------------
 

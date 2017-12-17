@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 '''flask.ext.yamli18n
 ~~~~~~~~~~~~~~~~~~~~~
@@ -23,7 +23,7 @@ except ImportError:
 
 from flask import session, request, Markup
 
-__version__ = '0.1.7'
+__version__ = '0.1.8'
 
 
 class YAMLI18N(object):
@@ -149,7 +149,7 @@ class YAMLI18N(object):
                 return Markup(text)
 
             msg = self.ymls['default'][lang].get(lower_text or text, text)
-            return Markup((msg % args).format(**kwargs))
+            return self.combine(msg, args, **kwargs)
 
         endpoint = None
         if text.startswith('..'):  # is format 3
@@ -166,7 +166,7 @@ class YAMLI18N(object):
             endpoint = '.' + endpoint
 
         if blueprint not in self.ymls:
-            return Markup((text % args).format(**kwargs))
+            return self.combine(text, args, **kwargs)
 
         bp = self.ymls[blueprint]
         if lang not in bp:
@@ -177,6 +177,13 @@ class YAMLI18N(object):
 
         yml = bp[lang]
         if endpoint in yml:
-            return Markup((yml[endpoint].get(s, text) % args).format(**kwargs))
+            return self.combine(yml[endpoint].get(s, text), args, **kwargs)
 
-        return Markup((yml.get(s, text) % args).format(**kwargs))
+        return self.combine(yml.get(s, text), args, **kwargs)
+
+    def combine(self, fmt, args, **kwargs):
+        msg = fmt % args
+        try:
+            return Markup(msg.format(**kwargs))
+        except KeyError:
+            return Markup(msg)
