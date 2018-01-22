@@ -7,11 +7,10 @@ It requires Python2.6+ as it uses string.format syntax.
 Or you can modify it to python2.5 '%s' syntax.
 """
 from setuptools import setup
-import flask_yamli18n
 
 setup(
     name='flask-yamli18n',
-    version=flask_yamli18n.__version__,
+    version='0.1.9',
     url='https://github.com/lixxu/flask-yamli18n',
     license='BSD',
     author='Lix Xu',

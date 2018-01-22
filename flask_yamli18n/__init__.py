@@ -23,7 +23,7 @@ except ImportError:
 
 from flask import session, request, Markup
 
-__version__ = '0.1.8'
+__version__ = '0.1.9'
 
 
 class YAMLI18N(object):

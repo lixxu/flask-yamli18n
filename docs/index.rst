@@ -148,6 +148,13 @@ API
 Changelog
 ---------
 
+Version 0.1.9
+-------------
+
+(bug fixed, released on 2018-Jan-22)
+
+- don't import it to get version in setup file
+
 Version 0.1.8
 -------------
 
