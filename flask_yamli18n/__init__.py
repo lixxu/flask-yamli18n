@@ -23,7 +23,7 @@ except ImportError:
 
 from flask import session, request, Markup
 
-__version__ = '0.1.9'
+__version__ = '0.2.0'
 
 
 class YAMLI18N(object):
@@ -182,7 +182,11 @@ class YAMLI18N(object):
         return self.combine(yml.get(s, text), args, **kwargs)
 
     def combine(self, fmt, args, **kwargs):
-        msg = fmt % args
+        try:
+            msg = fmt % args
+        except:
+            msg = fmt
+
         try:
             return Markup(msg.format(**kwargs))
         except KeyError:
