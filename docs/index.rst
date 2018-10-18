@@ -148,6 +148,13 @@ API
 Changelog
 ---------
 
+Version 0.2.0
+-------------
+
+(bug fixed, released on 2018-Oct-18)
+
+- ignore error if text may not meet parameters requirement
+
 Version 0.1.9
 -------------
 
